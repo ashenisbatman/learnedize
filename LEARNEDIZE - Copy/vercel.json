@@ -1,3 +1,9 @@
 {
-  "framework": "nitro"
+  "framework": "nitro",
+  "rewrites": [
+    {
+      "source": "/~oauth/:path*",
+      "destination": "/"
+    }
+  ]
 }
