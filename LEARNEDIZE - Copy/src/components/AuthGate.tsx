@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { lovable } from "@/integrations/lovable";
+import { supabase } from "@/integrations/supabase/client";
 
 export function AuthGateModal({
   open,
@@ -20,11 +20,13 @@ export function AuthGateModal({
   if (!open) return null;
 
   const signIn = async () => {
-    await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-  };
-
+  await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: window.location.origin,
+    },
+  });
+};
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center bg-background/80 backdrop-blur-sm fade-up"
