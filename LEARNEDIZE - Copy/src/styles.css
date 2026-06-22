@@ -1,0 +1,162 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-cream: var(--cream);
+  --color-ink: var(--ink);
+  --font-serif: var(--font-serif);
+  --font-sans: var(--font-sans);
+}
+
+:root {
+  --radius: 0.25rem;
+  /* Matte library archive */
+  --background: oklch(0.14 0.005 60);
+  --foreground: oklch(0.92 0.015 75);
+  --card: oklch(0.17 0.006 60);
+  --card-foreground: oklch(0.92 0.015 75);
+  --popover: oklch(0.16 0.005 60);
+  --popover-foreground: oklch(0.92 0.015 75);
+  --primary: oklch(0.94 0.02 80);
+  --primary-foreground: oklch(0.14 0.005 60);
+  --secondary: oklch(0.22 0.006 60);
+  --secondary-foreground: oklch(0.92 0.015 75);
+  --muted: oklch(0.20 0.005 60);
+  --muted-foreground: oklch(0.62 0.012 70);
+  --accent: oklch(0.30 0.01 70);
+  --accent-foreground: oklch(0.94 0.02 80);
+  --destructive: oklch(0.55 0.18 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.30 0.008 70 / 0.6);
+  --input: oklch(0.30 0.008 70 / 0.6);
+  --ring: oklch(0.55 0.02 75);
+  --cream: oklch(0.96 0.025 85);
+  --ink: oklch(0.12 0.005 60);
+  --font-serif: "EB Garamond", "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+.light {
+  --background: oklch(0.975 0.012 85);
+  --foreground: oklch(0.10 0 0);
+  --card: oklch(0.96 0.012 85);
+  --card-foreground: oklch(0.10 0 0);
+  --popover: oklch(0.97 0.012 85);
+  --popover-foreground: oklch(0.10 0 0);
+  --primary: oklch(0.10 0 0);
+  --primary-foreground: oklch(0.975 0.012 85);
+  --secondary: oklch(0.93 0.01 85);
+  --secondary-foreground: oklch(0.10 0 0);
+  --muted: oklch(0.92 0.008 85);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.88 0.012 85);
+  --accent-foreground: oklch(0.10 0 0);
+  --border: oklch(0.20 0 0 / 0.20);
+  --input: oklch(0.20 0 0 / 0.20);
+  --ring: oklch(0.30 0 0);
+  --cream: oklch(0.10 0 0);
+  --ink: oklch(0.975 0.012 85);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html, body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .font-serif { font-family: var(--font-serif); }
+  ::selection { background: var(--cream); color: var(--ink); }
+}
+
+@utility tracking-archive {
+  letter-spacing: 0.22em;
+}
+@utility tracking-wider-archive {
+  letter-spacing: 0.35em;
+}
+@utility pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--foreground);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+@utility pill-active {
+  background: var(--cream);
+  color: var(--ink);
+  border-color: var(--cream);
+}
+@utility divider-line {
+  height: 1px;
+  background: var(--border);
+  flex: 1;
+}
+
+/* Macha thinking dots */
+@keyframes pulseFade {
+  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+.macha-dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--cream);
+  display: inline-block;
+  animation: pulseFade 1.4s infinite both;
+}
+.macha-dot:nth-child(1) { animation-delay: 0s; }
+.macha-dot:nth-child(2) { animation-delay: 0.2s; }
+.macha-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.4s ease-out both; }
+
+@keyframes pulseText {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.pulse-text { animation: pulseText 1.2s ease-in-out infinite; }
+
+@utility tap {
+  transition: transform 0.1s ease-out, background-color 0.15s ease, color 0.15s ease;
+}
+.tap:active { transform: scale(0.95); }
+
