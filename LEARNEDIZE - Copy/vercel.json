@@ -1,11 +1,5 @@
 {
   "framework": null,
   "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "npm run build",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/"
-    }
-  ]
+  "buildCommand": "npm run build"
 }
