@@ -23,7 +23,7 @@ export function AuthGateModal({
   await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: window.location.origin,
+      redirectTo: "https://learnedize.vercel.app",
     },
   });
 };
