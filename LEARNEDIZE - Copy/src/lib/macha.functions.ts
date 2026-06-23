@@ -21,7 +21,7 @@ export const askMacha = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error("MACHA_V2_TEST");
+    if (!apiKey) throw new Error("Gemini API key not configured");
 
     // Split out any system messages from the conversation; Gemini takes a
     // separate systemInstruction field rather than a "system" role.
@@ -40,7 +40,7 @@ export const askMacha = createServerFn({ method: "POST" })
     }));
 
     const url =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
     const res = await fetch(url, {
       method: "POST",
