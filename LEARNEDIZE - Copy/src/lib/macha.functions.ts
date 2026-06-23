@@ -7,6 +7,9 @@ const MessageSchema = z.object({
   content: z.string().min(1).max(8000),
 });
 
+const SYSTEM_PROMPT =
+  "You are Macha, an erudite archival research assistant for the learnedize human-scholarship archive. Respond with the calm precision of a senior librarian: concise, sourced where possible, formal but warm. Use plain prose; no markdown headers.";
+
 export const askMacha = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
@@ -17,25 +20,37 @@ export const askMacha = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data }) => {
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) throw new Error("AI gateway not configured");
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error("Gemini API key not configured");
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    // Split out any system messages from the conversation; Gemini takes a
+    // separate systemInstruction field rather than a "system" role.
+    const systemTexts: string[] = [SYSTEM_PROMPT];
+    const convo = data.messages.filter((m) => {
+      if (m.role === "system") {
+        systemTexts.push(m.content);
+        return false;
+      }
+      return true;
+    });
+
+    const contents = convo.map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
+
+    const url =
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+
+    const res = await fetch(url, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
+        "x-goog-api-key": apiKey,
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are Macha, an erudite archival research assistant for the Learnedize human-scholarship archive. Respond with the calm precision of a senior librarian: concise, sourced where possible, formal but warm. Use plain prose; no markdown headers.",
-          },
-          ...data.messages,
-        ],
+        systemInstruction: { parts: [{ text: systemTexts.join("\n\n") }] },
+        contents,
       }),
     });
 
@@ -47,6 +62,10 @@ export const askMacha = createServerFn({ method: "POST" })
     }
 
     const json = await res.json();
-    const content: string = json?.choices?.[0]?.message?.content ?? "";
+    const content: string =
+      json?.candidates?.[0]?.content?.parts
+        ?.map((p: { text?: string }) => p?.text ?? "")
+        .join("") ?? "";
     return { content };
   });
+
