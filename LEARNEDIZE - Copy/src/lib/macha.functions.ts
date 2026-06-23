@@ -21,7 +21,7 @@ export const askMacha = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error("Gemini API key not configured");
+    if (!apiKey) throw new Error("MACHA_V2_TEST");
 
     // Split out any system messages from the conversation; Gemini takes a
     // separate systemInstruction field rather than a "system" role.
