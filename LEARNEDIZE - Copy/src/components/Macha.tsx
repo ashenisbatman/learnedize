@@ -79,7 +79,7 @@ export function MachaWidget({
           setThreads((prev) =>
             prev.map((x) =>
               x.id === t.id
-                ? { ...x, messages: [...t.messages, { role: "assistant", content: res.content || "…" }] }
+                ? { ...x, messages: [...t.messages, { role: "assistant", content: res?.content || "…" }] }
                 : x,
             ),
           );
@@ -160,7 +160,7 @@ export function MachaWidget({
       setThreads((prev) =>
         prev.map((t) =>
           t.id === active.id
-            ? { ...t, messages: [...nextMsgs, { role: "assistant", content: res.content || "…" }] }
+            ? { ...t, messages: [...nextMsgs, { role: "assistant", content: res?.content || "…" }] }
             : t,
         ),
       );
