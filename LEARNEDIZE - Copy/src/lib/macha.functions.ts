@@ -57,11 +57,8 @@ export const askMacha = createServerFn({ method: "POST" })
     );
   }
 
-  let res = await callGemini("gemini-2.0-flash-lite");
+  let res = await callGemini("gemini-2.5-flash-lite");
 
-  if (res.status === 503) {
-    res = await callGemini("gemini-2.5-flash");
-  }
 
   if (!res.ok) {
     const text = await res.text();
