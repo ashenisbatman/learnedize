@@ -19,60 +19,67 @@ export const askMacha = createServerFn({ method: "POST" })
       })
       .parse(data),
   )
-  .handler(async ({ data }) => {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error("Gemini API key not configured");
+.handler(async ({ data }) => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error("Gemini API key not configured");
 
-    // Split out any system messages from the conversation; Gemini takes a
-    // separate systemInstruction field rather than a "system" role.
-    const systemTexts: string[] = [SYSTEM_PROMPT];
-    const convo = data.messages.filter((m) => {
-      if (m.role === "system") {
-        systemTexts.push(m.content);
-        return false;
-      }
-      return true;
-    });
+  const systemTexts: string[] = [SYSTEM_PROMPT];
 
-    const contents = convo.map((m) => ({
-      role: m.role === "assistant" ? "model" : "user",
-      parts: [{ text: m.content }],
-    }));
-
-   const url =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": apiKey,
-      },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemTexts.join("\n\n") }] },
-        contents,
-      }),
-    });
-
-if (!res.ok) {
-  const text = await res.text();
-
-  if (res.status === 429) {
-    throw new Error(`429 ERROR: ${text}`);
-  }
-
-  if (res.status === 402) {
-    throw new Error("AI credits exhausted.");
-  }
-
-  throw new Error(`Macha error: ${text.slice(0, 500)}`);
-}
-
-    const json = await res.json();
-    const content: string =
-      json?.candidates?.[0]?.content?.parts
-        ?.map((p: { text?: string }) => p?.text ?? "")
-        .join("") ?? "";
-    return { content };
+  const convo = data.messages.filter((m) => {
+    if (m.role === "system") {
+      systemTexts.push(m.content);
+      return false;
+    }
+    return true;
   });
+
+  const contents = convo.map((m) => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
+  }));
+
+  async function callGemini(model: string) {
+    return fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
+        },
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{ text: systemTexts.join("\n\n") }],
+          },
+          contents,
+        }),
+      }
+    );
+  }
+
+  let res = await callGemini("gemini-2.0-flash-lite");
+
+  if (res.status === 503) {
+    res = await callGemini("gemini-2.5-flash");
+  }
+
+  if (!res.ok) {
+    const text = await res.text();
+
+    if (res.status === 429) {
+      throw new Error(`429 ERROR: ${text}`);
+    }
+
+    throw new Error(`Macha error: ${text.slice(0, 500)}`);
+  }
+
+  const json = await res.json();
+
+  const content =
+    json?.candidates?.[0]?.content?.parts
+      ?.map((p: { text?: string }) => p.text ?? "")
+      .join("") ?? "";
+
+  return { content };
+});
 
