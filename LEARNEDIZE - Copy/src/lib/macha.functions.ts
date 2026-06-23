@@ -56,7 +56,10 @@ export const askMacha = createServerFn({ method: "POST" })
 
     if (!res.ok) {
       const text = await res.text();
-      if (res.status === 429) throw new Error("Rate limit reached. Please wait a moment.");
+      if (res.status === 429) {
+  const text = await res.text();
+  throw new Error(`429: ${text}`);
+}
       if (res.status === 402) throw new Error("AI credits exhausted.");
       throw new Error(`Macha error: ${text.slice(0, 200)}`);
     }
