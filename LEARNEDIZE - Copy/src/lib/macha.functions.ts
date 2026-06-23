@@ -23,7 +23,6 @@ export const askMacha = createServerFn({ method: "POST" })
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("Gemini API key not configured");
 
-  throw new Error("DEPLOY CHECK V1");
 
   const systemTexts: string[] = [SYSTEM_PROMPT];
 
@@ -59,7 +58,7 @@ export const askMacha = createServerFn({ method: "POST" })
     );
   }
 
-  let res = await callGemini("gemini-2.5-flash-lite");
+  let res = await callGemini("gemini-2.5-flash");
 
 
   if (!res.ok) {
