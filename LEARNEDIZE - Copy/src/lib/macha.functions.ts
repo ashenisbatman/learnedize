@@ -23,6 +23,8 @@ export const askMacha = createServerFn({ method: "POST" })
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("Gemini API key not configured");
 
+  throw new Error("DEPLOY CHECK V1");
+
   const systemTexts: string[] = [SYSTEM_PROMPT];
 
   const convo = data.messages.filter((m) => {
