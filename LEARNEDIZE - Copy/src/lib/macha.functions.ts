@@ -54,15 +54,19 @@ export const askMacha = createServerFn({ method: "POST" })
       }),
     });
 
-    if (!res.ok) {
-      const text = await res.text();
-      if (res.status === 429) {
+if (!res.ok) {
   const text = await res.text();
-  throw new Error(`429: ${text}`);
+
+  if (res.status === 429) {
+    throw new Error(`429 ERROR: ${text}`);
+  }
+
+  if (res.status === 402) {
+    throw new Error("AI credits exhausted.");
+  }
+
+  throw new Error(`Macha error: ${text.slice(0, 500)}`);
 }
-      if (res.status === 402) throw new Error("AI credits exhausted.");
-      throw new Error(`Macha error: ${text.slice(0, 200)}`);
-    }
 
     const json = await res.json();
     const content: string =
