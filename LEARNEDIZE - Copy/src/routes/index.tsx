@@ -315,7 +315,7 @@ function Index() {
 
         <footer className="mt-24 pb-12 flex justify-center">
           <p className="text-[10px] uppercase tracking-wider-archive text-muted-foreground text-center">
-            Independent Project · MMXXVI
+            A Quant Project · MMXXVI
           </p>
         </footer>
       </main>
