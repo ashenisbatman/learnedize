@@ -463,14 +463,30 @@ function ReaderView({
             className="h-[80vh] w-full rounded-md border bg-background"
             allow="fullscreen"
           />
-        ) : (
-          <article
-            ref={articleRef}
-            className="whitespace-pre-wrap font-serif text-lg leading-[1.9] text-foreground/95"
-          >
-            {reading.text}
-          </article>
-        )}
+       ) : reading.mode === "structured" ? (
+  <article
+    ref={articleRef}
+    className="font-serif text-lg leading-[1.9] text-foreground/95"
+  >
+    {reading.sections.map((section, i) => (
+      <section key={i} className="mb-10">
+        <h3 className="mb-4 text-2xl font-semibold">
+          {section.heading}
+        </h3>
+        <p className="whitespace-pre-wrap">
+          {section.body}
+        </p>
+      </section>
+    ))}
+  </article>
+) : (
+  <article
+    ref={articleRef}
+    className="whitespace-pre-wrap font-serif text-lg leading-[1.9] text-foreground/95"
+  >
+    {reading.text}
+  </article>
+)}
       </div>
 
       {sel && (
