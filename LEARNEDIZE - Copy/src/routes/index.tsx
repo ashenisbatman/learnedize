@@ -19,11 +19,11 @@ import { ProfileModal } from "@/components/Profile";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Learnedize — An Archive of Human Scholarship" },
+      { title: "Achieved — An Archive of Human Scholarship" },
       {
         name: "description",
         content:
-          "Learnedize is a matte, minimal archive of human scholarship — research papers, books, and literature, searchable across the world's open repositories.",
+          "Achieved is a matte, minimal archive of human scholarship — research papers, books, and literature, searchable across the world's open repositories.",
       },
     ],
   }),
@@ -200,7 +200,7 @@ function Index() {
                 Z
               </button>
               <h1 className="font-serif text-6xl md:text-8xl tracking-wide text-foreground">
-                LEARNEDIZE
+                Learnedize
               </h1>
               <div className="mt-6 flex w-full max-w-md items-center gap-4">
                 <span className="divider-line" />
@@ -456,37 +456,37 @@ function ReaderView({
             <span className="macha-dot" />
             <span className="macha-dot" />
           </div>
+        ) : reading.mode === "structured" ? (
+          <article ref={articleRef} className="font-serif text-lg leading-[1.9] text-foreground/95">
+            {reading.sections.map((s, i) => (
+              <section key={i} className="mb-10">
+                <h3 className="mb-3 text-[11px] uppercase tracking-wider-archive text-muted-foreground">
+                  {s.heading}
+                </h3>
+                <p className="whitespace-pre-wrap">{s.body}</p>
+              </section>
+            ))}
+          </article>
         ) : reading.mode === "embed" ? (
-          <iframe
-            src={reading.embedUrl}
-            title={rec.title}
-            className="h-[80vh] w-full rounded-md border bg-background"
-            allow="fullscreen"
-          />
-       ) : reading.mode === "structured" ? (
-  <article
-    ref={articleRef}
-    className="font-serif text-lg leading-[1.9] text-foreground/95"
-  >
-    {reading.sections.map((section, i) => (
-      <section key={i} className="mb-10">
-        <h3 className="mb-4 text-2xl font-semibold">
-          {section.heading}
-        </h3>
-        <p className="whitespace-pre-wrap">
-          {section.body}
-        </p>
-      </section>
-    ))}
-  </article>
-) : (
-  <article
-    ref={articleRef}
-    className="whitespace-pre-wrap font-serif text-lg leading-[1.9] text-foreground/95"
-  >
-    {reading.text}
-  </article>
-)}
+          <div>
+            <p className="mb-3 text-[10px] uppercase tracking-wider-archive text-muted-foreground">
+              Native text unavailable — rendering source document
+            </p>
+            <iframe
+              src={reading.embedUrl}
+              title={rec.title}
+              className="h-[85vh] w-full rounded-md border bg-background"
+              allow="fullscreen"
+            />
+          </div>
+        ) : (
+          <article
+            ref={articleRef}
+            className="whitespace-pre-wrap font-serif text-lg leading-[1.9] text-foreground/95"
+          >
+            {reading.text}
+          </article>
+        )}
       </div>
 
       {sel && (
@@ -511,6 +511,8 @@ function ReaderView({
     </div>
   );
 }
+
+
 
 
 
