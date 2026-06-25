@@ -19,11 +19,11 @@ import { ProfileModal } from "@/components/Profile";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Achieved — An Archive of Human Scholarship" },
+      { title: "Learnedize — An Archive of Human Scholarship" },
       {
         name: "description",
         content:
-          "Achieved is a matte, minimal archive of human scholarship — research papers, books, and literature, searchable across the world's open repositories.",
+          "Learnedize is a matte, minimal archive of human scholarship — research papers, books, and literature, searchable across the world's open repositories.",
       },
     ],
   }),
@@ -495,14 +495,15 @@ function ReaderView({
       </section>
     ))}
   </article>
-) : (
+) : reading.mode === "text" || reading.mode === "fallback" ? (
   <article
     ref={articleRef}
     className="whitespace-pre-wrap font-serif text-lg leading-[1.9] text-foreground/95"
   >
     {reading.text}
   </article>
-)}
+) : null
+}
       </div>
 
       {sel && (
