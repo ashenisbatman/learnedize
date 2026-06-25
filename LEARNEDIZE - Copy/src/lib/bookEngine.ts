@@ -421,5 +421,6 @@ Source: ${rec.source}
 
 — EDITORIAL OVERVIEW —
 
-${rec.description ?? `"${title}" is preserved in the Learnedize archive. The full readable text is not currently available from this source; the original may be consulted via "Read Original".`}`;
+${rec.description ?? `"${title}" is preserved in the Achieved archive. The full readable text is not currently available from this source; the original may be consulted via "Read Original".`}`;
 }
+
