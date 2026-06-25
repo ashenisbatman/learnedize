@@ -7,7 +7,8 @@ import { AuthGateModal } from "@/components/AuthGate";
 import { HistoryPanel, pushHistory } from "@/components/ReadingHistory";
 import {
   searchArchiveStream,
-  fetchReadingText,
+  resolveReading,
+  type ReadingResource,
   type Record as ArchRecord,
 } from "@/lib/bookEngine";
 import { LibraryPanel, StarButton } from "@/components/Library";
@@ -18,7 +19,7 @@ import { ProfileModal } from "@/components/Profile";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Learnedize — An Archive of Human Scholarship" },
+      { title: "Achieved — An Archive of Human Scholarship" },
       {
         name: "description",
         content:
@@ -39,7 +40,7 @@ function Index() {
   const [results, setResults] = useState<ArchRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState<ArchRecord | null>(null);
-  const [reading, setReading] = useState<string>("");
+  const [reading, setReading] = useState<ReadingResource | null>(null);
   const [readingLoading, setReadingLoading] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
@@ -49,7 +50,7 @@ function Index() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setAuthed(!!s));
-    const stored = (typeof window !== "undefined" && localStorage.getItem("learnedize.theme")) as
+    const stored = (typeof window !== "undefined" && localStorage.getItem("achieved.theme")) as
       | "dark"
       | "light"
       | null;
@@ -65,7 +66,7 @@ function Index() {
     setTheme(next);
     if (typeof document !== "undefined") {
       document.documentElement.classList.toggle("light", next === "light");
-      localStorage.setItem("learnedize.theme", next);
+      localStorage.setItem("achieved.theme", next);
     }
   };
 
@@ -81,7 +82,7 @@ function Index() {
     if (!query.trim()) {
       setResults([]);
       setActive(null);
-      setReading("");
+      setReading(null);
       return;
     }
     setLoading(true);
@@ -101,13 +102,13 @@ function Index() {
     setQuery("");
     setResults([]);
     setActive(null);
-    setReading("");
+    setReading(null);
   };
 
 
   const openRecord = async (rec: ArchRecord) => {
     setActive(rec);
-    setReading("");
+    setReading(null);
     setReadingLoading(true);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
     pushHistory({
@@ -123,8 +124,8 @@ function Index() {
       cover: rec.cover,
     });
     try {
-      const text = await fetchReadingText(rec);
-      setReading(text);
+      const res = await resolveReading(rec);
+      setReading(res);
     } finally {
       setReadingLoading(false);
     }
@@ -132,7 +133,7 @@ function Index() {
 
   const goHome = () => {
     setActive(null);
-    setReading("");
+    setReading(null);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -199,7 +200,7 @@ function Index() {
                 Z
               </button>
               <h1 className="font-serif text-6xl md:text-8xl tracking-wide text-foreground">
-                LEARNEDIZE
+                ACHIEVED
               </h1>
               <div className="mt-6 flex w-full max-w-md items-center gap-4">
                 <span className="divider-line" />
@@ -315,7 +316,7 @@ function Index() {
 
         <footer className="mt-24 pb-12 flex justify-center">
           <p className="text-[10px] uppercase tracking-wider-archive text-muted-foreground text-center">
-            A Quant Project · MMXXVI
+            Founders: Virat and Sam
           </p>
         </footer>
       </main>
@@ -364,7 +365,7 @@ function ReaderView({
   onHome,
 }: {
   rec: ArchRecord;
-  reading: string;
+  reading: ReadingResource | null;
   loading: boolean;
   onHome: () => void;
 }) {
@@ -443,24 +444,31 @@ function ReaderView({
           href={rec.readUrl}
           target="_blank"
           rel="noreferrer"
-          className="mt-4 inline-block text-[10px] uppercase tracking-wider-archive text-muted-foreground underline hover:text-foreground"
+          className="mt-5 inline-flex items-center gap-2 rounded-full border border-foreground bg-foreground px-4 py-2 text-[11px] uppercase tracking-wider-archive text-background tap hover:opacity-90"
         >
-          Open at source ↗
+          Read Original ↗
         </a>
       )}
       <div className="mt-8 border-t pt-8">
-        {loading ? (
+        {loading || !reading ? (
           <div className="flex gap-1.5">
             <span className="macha-dot" />
             <span className="macha-dot" />
             <span className="macha-dot" />
           </div>
+        ) : reading.mode === "embed" ? (
+          <iframe
+            src={reading.embedUrl}
+            title={rec.title}
+            className="h-[80vh] w-full rounded-md border bg-background"
+            allow="fullscreen"
+          />
         ) : (
           <article
             ref={articleRef}
             className="whitespace-pre-wrap font-serif text-lg leading-[1.9] text-foreground/95"
           >
-            {reading}
+            {reading.text}
           </article>
         )}
       </div>
