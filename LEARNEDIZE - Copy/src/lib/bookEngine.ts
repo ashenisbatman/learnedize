@@ -217,6 +217,67 @@ export async function fetchReadingText(rec: Record): Promise<string> {
   return academicFallback(rec);
 }
 
+export type ReadingResource =
+  | { mode: "text"; text: string }
+  | { mode: "embed"; embedUrl: string }
+  | { mode: "fallback"; text: string };
+
+/**
+ * Resolve the best in-app reading experience for a record.
+ * Prefers actual full text or an embeddable reader over the editorial fallback.
+ */
+export async function resolveReading(rec: Record): Promise<ReadingResource> {
+  // 1) Plain-text full content (e.g. Project Gutenberg)
+  if (rec.textUrl) {
+    try {
+      const r = await fetch(rec.textUrl);
+      if (r.ok) {
+        const txt = await r.text();
+        const trimmed = txt.trim();
+        if (!trimmed.startsWith("<!DOCTYPE") && !trimmed.startsWith("<html")) {
+          return { mode: "text", text: txt.slice(0, 400_000) };
+        }
+      }
+    } catch {
+      /* fall through */
+    }
+  }
+
+  // 2) Source-specific embeddable readers
+  const embed = embeddableUrl(rec);
+  if (embed) return { mode: "embed", embedUrl: embed };
+
+  // 3) Last-resort editorial overview
+  return { mode: "fallback", text: academicFallback(rec) };
+}
+
+/**
+ * Return an iframe-embeddable URL for sources that allow it, or null.
+ */
+export function embeddableUrl(rec: Record): string | null {
+  // arXiv: open the actual PDF instead of an abstract page
+  if (rec.id.startsWith("arx-") && rec.readUrl) {
+    const pdf = rec.readUrl
+      .replace(/^http:\/\//, "https://")
+      .replace("/abs/", "/pdf/");
+    return pdf.endsWith(".pdf") ? pdf : `${pdf}.pdf`;
+  }
+  // Open Library / Internet Archive reader
+  if (rec.id.startsWith("ol-") && rec.readUrl?.includes("archive.org/details/")) {
+    const ident = rec.readUrl.split("archive.org/details/")[1]?.split(/[?#/]/)[0];
+    if (ident) return `https://archive.org/embed/${ident}`;
+  }
+  // Standard Ebooks reader page
+  if (rec.id.startsWith("se-") && rec.readUrl) {
+    return rec.readUrl;
+  }
+  // Project Gutenberg HTML reader (when no plain text was usable)
+  if (rec.id.startsWith("gut-") && rec.readUrl) {
+    return rec.readUrl;
+  }
+  return null;
+}
+
 export function academicFallback(rec: Record): string {
   const title = rec.title;
   const author = rec.author;
