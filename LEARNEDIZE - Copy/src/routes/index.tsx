@@ -479,14 +479,16 @@ function ReaderView({
               allow="fullscreen"
             />
           </div>
-        ) : (
-          <article
-            ref={articleRef}
-            className="whitespace-pre-wrap font-serif text-lg leading-[1.9] text-foreground/95"
-          >
-            {reading.text}
-          </article>
-        )}
+      ) : (
+  reading?.mode === "text" || reading?.mode === "fallback" ? (
+    <article
+      ref={articleRef}
+      className="whitespace-pre-wrap font-serif text-lg leading-[1.9] text-foreground/95"
+    >
+      {reading.text}
+    </article>
+  ) : null
+)
       </div>
 
       {sel && (
