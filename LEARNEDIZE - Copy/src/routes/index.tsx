@@ -19,7 +19,7 @@ import { ProfileModal } from "@/components/Profile";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Achieved — An Archive of Human Scholarship" },
+      { title: "Learnedize — An Archive of Human Scholarship" },
       {
         name: "description",
         content:
@@ -50,7 +50,7 @@ function Index() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setAuthed(!!s));
-    const stored = (typeof window !== "undefined" && localStorage.getItem("achieved.theme")) as
+    const stored = (typeof window !== "undefined" && localStorage.getItem("Learnedize.theme")) as
       | "dark"
       | "light"
       | null;
@@ -66,7 +66,7 @@ function Index() {
     setTheme(next);
     if (typeof document !== "undefined") {
       document.documentElement.classList.toggle("light", next === "light");
-      localStorage.setItem("achieved.theme", next);
+      localStorage.setItem("Learnedize.theme", next);
     }
   };
 
@@ -200,7 +200,7 @@ function Index() {
                 Z
               </button>
               <h1 className="font-serif text-6xl md:text-8xl tracking-wide text-foreground">
-                ACHIEVED
+                LEARNEDIZE
               </h1>
               <div className="mt-6 flex w-full max-w-md items-center gap-4">
                 <span className="divider-line" />
@@ -316,7 +316,7 @@ function Index() {
 
         <footer className="mt-24 pb-12 flex justify-center">
           <p className="text-[10px] uppercase tracking-wider-archive text-muted-foreground text-center">
-            Founders: Virat and Sam
+            A Quant Project
           </p>
         </footer>
       </main>
@@ -495,4 +495,6 @@ function ReaderView({
     </div>
   );
 }
+
+
 
